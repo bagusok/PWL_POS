@@ -1,11 +1,8 @@
 <?php
 
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\OrdersController;
-use App\Http\Controllers\Products;
-use App\Http\Controllers\ProductsController;
-use App\Http\Controllers\Users;
-use App\Http\Controllers\UsersController;
+use App\Http\Controllers\KategoriCOntroller;
+use App\Http\Controllers\LevelController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,22 +16,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [
-    HomeController::class,
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
+// ------------------
+
+Route::get('/level', [
+    LevelController::class,
     'index'
 ]);
-
-Route::get('/category/{slug}', [
-    ProductsController::class,
-    'category'
-]);
-
-Route::get('/user/{userId}/name/{name}', [
-    UsersController::class,
+Route::get('/kategori', [
+    KategoriController::class,
     'index'
 ]);
-
-Route::get('/orders', [
-    OrdersController::class,
+Route::get('/user', [
+    UserController::class,
     'index'
 ]);
