@@ -93,7 +93,7 @@ confirm(\'Apakah Anda yakit menghapus data ini?\');">Hapus</button></form>';
 
     public function show(string $id)
     {
-        $kategori = KategoriModel::find($id)->first();
+        $kategori = KategoriModel::find($id);
 
 
         // dd($kategori);
