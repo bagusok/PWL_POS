@@ -19,10 +19,10 @@ class UserModel extends Model
         'password'
     ];
 
-    public function kategori()
-    {
-        return $this->belongsTo(KategoriModel::class, 'kategori_id', 'kategori_id');
-    }
+    // public function kategori()
+    // {
+    //     return $this->belongsTo(KategoriModel::class, 'kategori_id', 'kategori_id');
+    // }
 
     public function level()
     {
