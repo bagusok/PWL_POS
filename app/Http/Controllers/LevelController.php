@@ -270,21 +270,30 @@ class LevelController extends Controller
     public function delete_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            $level = LevelModel::find($id);
+            try {
+                $level = LevelModel::find($id);
 
-            if ($level) {
-                $level->delete();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil dihapus'
-                ]);
-            } else {
+                if ($level) {
+                    $level->delete();
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Data berhasil dihapus'
+                    ]);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Data tidak ditemukan'
+                    ]);
+                }
+            } catch (QueryException $e) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Data tidak ditemukan'
-                ]);
+                    'message' => 'Data gagal dihapus, karena masih digunakan'
+                ]); {
+                }
             }
         }
+
         return redirect('/');
     }
 }

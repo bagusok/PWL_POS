@@ -19,9 +19,7 @@ return new class extends Migration
             $table->string('password', 255);
             $table->timestamps();
 
-            $table->foreign('level_id')->references('level_id')->on('m_level')->onDelete(
-                'cascade'
-            )->onUpdate('cascade');
+            $table->foreign('level_id')->references('level_id')->on('m_level');
         });
 
         Schema::create('m_penjualan', function (Blueprint $table) {
@@ -32,9 +30,7 @@ return new class extends Migration
             $table->dateTime('penjualan_tanggal');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('user_id')->on('m_user')->onDelete(
-                'cascade'
-            )->onUpdate('cascade');
+            $table->foreign('user_id')->references('user_id')->on('m_user');
         });
 
         Schema::create('m_barang', function (Blueprint $table) {
@@ -46,9 +42,7 @@ return new class extends Migration
             $table->integer('harga_jual');
             $table->timestamps();
 
-            $table->foreign('kategori_id')->references('kategori_id')->on('m_kategori')->onDelete(
-                'cascade'
-            )->onUpdate('cascade');
+            $table->foreign('kategori_id')->references('kategori_id')->on('m_kategori');
         });
 
         Schema::create('t_penjualan_detail', function (Blueprint $table) {
@@ -59,13 +53,9 @@ return new class extends Migration
             $table->integer('jumlah');
             $table->timestamps();
 
-            $table->foreign('penjualan_id')->references('penjualan_id')->on('m_penjualan')->onDelete(
-                'cascade'
-            )->onUpdate('cascade');
+            $table->foreign('penjualan_id')->references('penjualan_id')->on('m_penjualan');
 
-            $table->foreign('barang_id')->references('barang_id')->on('m_barang')->onDelete(
-                'cascade'
-            )->onUpdate('cascade');
+            $table->foreign('barang_id')->references('barang_id')->on('m_barang');
         });
 
         Schema::create('t_stock', function (Blueprint $table) {
@@ -77,18 +67,12 @@ return new class extends Migration
             $table->dateTime('stock_tanggal');
             $table->timestamps();
 
-            $table->foreign('supplier_id')->references('supplier_id')->on('m_supplier')->onDelete(
-                'cascade'
-            )->onUpdate('cascade');
+            $table->foreign('supplier_id')->references('supplier_id')->on('m_supplier');
 
-            $table->foreign('barang_id')->references('barang_id')->on('m_barang')->onDelete(
-                'cascade'
-            )->onUpdate('cascade');
+            $table->foreign('barang_id')->references('barang_id')->on('m_barang');
 
 
-            $table->foreign('user_id')->references('user_id')->on('m_user')->onDelete(
-                'cascade'
-            )->onUpdate('cascade');
+            $table->foreign('user_id')->references('user_id')->on('m_user');
         });
     }
 
