@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\KategoriCOntroller;
 use App\Http\Controllers\LevelController;
@@ -19,14 +20,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::pattern('id', '[0-9]+'); // localization
+
+
 Route::get('/', [
     WelcomeController::class,
     'index'
 ]);
 
+Route::get('login', [AuthController::class, 'login'])->name('login');
+Route::post('login', [AuthController::class, 'postLogin']);
+Route::get('register', [AuthController::class, 'register'])->name('register');
+Route::post('register', [AuthController::class, 'postRegister']);
+Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
+
 
 // ------------------
-Route::group(['prefix' => 'supplier'], function () {
+Route::group(['prefix' => 'supplier', 'middleware' => ['auth', 'authorize:ADM,MNG'],], function () {
     Route::get('/', [
         SupplierController::class,
         'index'
@@ -82,7 +92,7 @@ Route::group(['prefix' => 'supplier'], function () {
     ]);
 });
 
-Route::group(['prefix' => 'level'], function () {
+Route::group(['prefix' => 'level', 'middleware' => ['auth', 'authorize:ADM']], function () {
     Route::get('/', [
         LevelController::class,
         'index'
@@ -139,7 +149,7 @@ Route::group(['prefix' => 'level'], function () {
     ]);
 });
 
-Route::group(['prefix' => 'kategori'], function () {
+Route::group(['prefix' => 'kategori', 'middleware' => ['auth', 'authorize:ADM,MNG,STF']], function () {
     Route::get('/', [
         KategoriController::class,
         'index'
@@ -198,7 +208,7 @@ Route::group(['prefix' => 'kategori'], function () {
 });
 
 
-Route::group(['prefix' => 'user'], function () {
+Route::group(['prefix' => 'user', 'middleware' => ['auth', 'authorize:ADM'],], function () {
     Route::get('/', [
         UserController::class,
         'index'
@@ -257,7 +267,7 @@ Route::group(['prefix' => 'user'], function () {
     ]);
 });
 
-Route::group(['prefix' => 'barang'], function () {
+Route::group(['prefix' => 'barang', 'middleware' => ['auth', 'authorize:ADM,MNG,STF']], function () {
     Route::get('/', [
         BarangController::class,
         'index'
