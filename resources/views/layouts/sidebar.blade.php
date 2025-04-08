@@ -57,6 +57,16 @@
                     <p>Transaksi Penjualan</p>
                 </a>
             </li>
+
+            <li class="nav-header">Settings</li>
+            <li class="nav-item">
+                <a href="{{ url('user/settings/change-profile-picture') }}"
+                    class="nav-link {{ $activeMenu == 'change_profile_picture' ? 'active' : '' }} ">
+                    <i class="nav-icon fas fa-cubes"></i>
+                    <p>Ganti Foto Profile</p>
+                </a>
+            </li>
+
         </ul>
         @auth
             <button id="btn-logout" type="button" class="btn btn-danger btn-sm">Logout</button>

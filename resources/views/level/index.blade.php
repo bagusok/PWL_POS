@@ -4,6 +4,12 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
+                <a href="{{ url('/level/export_pdf') }}" class="btn btn-sm btn-warning"><i class="fa fa-filepdf"></i> Export
+                    PDF</a>
+                <a href="{{ url('/level/export_excel') }}" class="btn btn-sm btn-primary"><i class="fa fa-fileexcel"></i>
+                    Export
+                    Excell</a>
+                <button onclick="modalAction('{{ url('/level/import') }}')" class="btn btn-info">Import Barang</button>
                 <a class="btn btn-sm btn-primary mt-1" href="{{ url('level/create') }}">Tambah</a>
                 <button type="button" onclick="modalAction('{{ url('level/create_ajax') }}')"
                     class="btn btn-sm btn-success mt-1">Tambah

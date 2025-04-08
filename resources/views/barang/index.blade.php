@@ -4,6 +4,13 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
+                <a href="{{ url('/barang/export_pdf') }}" class="btn btn-sm btn-warning"><i class="fa fa-filepdf"></i> Export
+                    PDF</a>
+                <a href="{{ url('/barang/export_excel') }}" class="btn btn-sm btn-primary"><i class="fa fa-fileexcel"></i>
+                    Export
+                    Excel</a>
+                <button onclick="modalAction('{{ url('/barang/import') }}')" class="btn btn-sm btn-info">Import
+                    Barang</button>
                 <a class="btn btn-sm btn-primary mt-1" href="{{ url('barang/create') }}">Tambah</a>
                 <button type="button" onclick="modalAction('{{ url('barang/create_ajax') }}')"
                     class="btn btn-sm btn-success mt-1">Tambah
@@ -128,6 +135,18 @@
                     }
                 ]
             });
+
+            $('#table-barang_filter input').unbind().bind().on('keyup', function(e) {
+                if (e.keyCode == 13) { // enter key
+                    dataBarang.search(this.value).draw();
+                }
+            });
+
+            $('.filter_kategori').change(function() {
+                dataBarang.draw();
+            });
+
+
 
             $('#kategori_id').on('change', function() {
                 dataBarang.ajax.reload();
