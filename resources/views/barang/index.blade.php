@@ -57,6 +57,9 @@
                         <th>Harga Jual</th>
                         <th>Harga Beli</th>
                         <th>Kategori</th>
+                        <th>Terjual</th>
+                        <th>Sisa</th>
+                        <th>Semua Stock</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -127,7 +130,26 @@
                         className: "",
                         orderable: false,
                         searchable: false
-                    }, {
+                    },
+                    {
+                        data: "total_penjualan",
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "stock_available",
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "total_stock",
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
                         data: "aksi",
                         className: "",
                         orderable: false,

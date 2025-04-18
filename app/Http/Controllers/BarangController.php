@@ -39,6 +39,8 @@ class BarangController extends Controller
         $barangs = BarangModel::select('barang_id', 'barang_kode', 'barang_nama', 'harga_jual', 'harga_beli', 'kategori_id')
             ->with('kategori');
 
+        // dd($barangs->first()->total_stock, $barangs->first()->total_penjualan, $barangs->first()->stock_available);
+
         if ($request->kategori_id) {
             $barangs->where('kategori_id', $request->kategori_id);
         }
@@ -46,6 +48,15 @@ class BarangController extends Controller
         return DataTables::of($barangs)
             // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
             ->addIndexColumn()
+            ->addColumn('total_stock', function ($barang) {
+                return $barang->total_stock;
+            })
+            ->addColumn('total_penjualan', function ($barang) {
+                return $barang->total_penjualan;
+            })
+            ->addColumn('stock_available', function ($barang) {
+                return $barang->stock_available;
+            })
             ->addColumn('aksi', function ($barang) { // menambahkan kolom aksi
                 $btn = '<button onclick="modalAction(\'' . url('/barang/' . $barang->barang_id .
                     '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
@@ -300,21 +311,29 @@ class BarangController extends Controller
     public function delete_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            $barang = BarangModel::find($id);
+            try {
+                $barang = BarangModel::find($id);
 
-            if ($barang) {
-                $barang->delete();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data berhasil dihapus'
-                ]);
-            } else {
+                if ($barang) {
+                    $barang->delete();
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Data berhasil dihapus'
+                    ]);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Data tidak ditemukan'
+                    ]);
+                }
+            } catch (QueryException $e) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Data tidak ditemukan'
+                    'message' => 'Data gagal dihapus, karena masih digunakan'
                 ]);
             }
         }
+
         return redirect('/');
     }
 
