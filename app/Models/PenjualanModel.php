@@ -33,4 +33,9 @@ class PenjualanModel extends Model
     {
         return $this->hasMany(BarangModel::class, 'barang_id', 'barang_id');
     }
+
+    public function getTotalHargaAttribute()
+    {
+        return $this->penjualan_detail->sum('harga');
+    }
 }

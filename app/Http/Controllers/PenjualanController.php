@@ -6,6 +6,8 @@ use App\Models\BarangModel;
 use App\Models\PenjualanModel;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
 class PenjualanController extends Controller
@@ -34,13 +36,16 @@ class PenjualanController extends Controller
 
 
         return DataTables::of($penjualan)
-            // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
             ->addIndexColumn()
+            ->addColumn('total_harga', function ($penjualan) { // menambahkan kolom total harga
+                return 'Rp. ' . number_format($penjualan->total_harga, 0, ',', '.');
+            })
             ->addColumn('aksi', function ($penjualan) { // menambahkan kolom aksi
                 $btn = '<button onclick="modalAction(\'' . url('/penjualan/' . $penjualan->penjualan_id .
                     '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<a href="' . url('/penjualan/edit/' . $penjualan->penjualan_id) . '" class="btn btn-warning btn-sm">Edit</a>';
                 $btn .= '<button onclick="modalAction(\'' . url('/penjualan/' . $penjualan->penjualan_id .
-                    '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                    '/delete_ajax') . '\')" class="btn btn-danger btn-sm m-1">Hapus</button> ';
 
                 return $btn;
             })
@@ -63,6 +68,244 @@ class PenjualanController extends Controller
             'penjualan' => $penjualan
         ]);
     }
+
+    public function create()
+    {
+        $breadcrumb = (object) [
+            'title' => 'Tambah Penjualan',
+            'list' => ['Home', 'Penjualan', 'Tambah']
+        ];
+
+        $page = (object) [
+            'title' => 'Tambah Penjualan',
+        ];
+
+        $activeMenu = 'penjualan';
+
+        // $barang = BarangModel::select('barang_nama', 'harga_jual', 'barang_id')
+        //     ->with(['stock', 'penjualan_detail']) // supaya stock_available bisa diakses
+        //     ->get();
+
+        $barang = BarangModel::select('barang_nama', 'harga_jual', 'barang_id')
+            ->get()
+            ->map(function ($barang) {
+                return [
+                    'barang_id' => $barang->barang_id,
+                    'barang_nama' => $barang->barang_nama,
+                    'harga_jual' => $barang->harga_jual,
+                    'stock_available' => $barang->stock_available,
+                ];
+            });
+
+
+        // dd($barang);
+
+        return view('penjualan.create', compact('breadcrumb', 'page', 'activeMenu'))->with([
+            'barang' => $barang,
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'pembeli' => 'required|string|max:255',
+                'penjualan_tanggal' => 'required|date',
+                'barang' => 'required|array|min:1',
+                'barang.*.id' => 'required|exists:m_barang,barang_id',
+                'barang.*.quantity' => 'required|integer|min:1',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Validasi gagal",
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+
+            DB::beginTransaction();
+            try {
+                $penjualan = PenjualanModel::create([
+                    'user_id' => auth()->user()->user_id,
+                    'pembeli' => $request->pembeli,
+                    'penjualan_tanggal' => $request->penjualan_tanggal,
+                    'penjualan_kode' => 'P'  . time() . strtoupper(str()->random(8)),
+                ]);
+
+                foreach ($request->barang as $item) {
+                    $barang = BarangModel::find($item['id']);
+
+
+                    // cek stock barang
+                    if ($barang->stock_available < $item['quantity']) {
+                        DB::rollBack();
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Stock barang tidak cukup'
+                        ]);
+                    }
+
+                    $penjualan->penjualan_detail()->create([
+                        'penjualan_id' => $penjualan->penjualan_id,
+                        'barang_id' => $item['id'],
+                        'jumlah' => $item['quantity'],
+                        'harga' => $barang->harga_jual * $item['quantity'],
+                    ]);
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Penjualan berhasil disimpan'
+                ]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Terjadi kesalahan saat menyimpan data',
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+        redirect('/penjualan');
+    }
+
+    public function edit(string $id)
+    {
+        $breadcrumb = (object) [
+            'title' => 'Edit Penjualan',
+            'list' => ['Home', 'Penjualan', 'Edit']
+        ];
+
+        $page = (object) [
+            'title' => 'Edit Penjualan',
+        ];
+
+        $activeMenu = 'penjualan';
+
+        $penjualan = PenjualanModel::with('user', 'penjualan_detail')->find($id);
+
+        if (!$penjualan) {
+            return redirect('/penjualan');
+        }
+
+        $penjualanWithBarang = $penjualan->penjualan_detail->map(function ($item) {
+            return [
+                'barang_id' => $item->barang_id,
+                'barang_nama' => $item->barang->barang_nama,
+                'harga_jual' => $item->barang->harga_jual,
+                'jumlah' => $item->jumlah,
+                'stock_available' => $item->barang->stock_available,
+                'total_harga' => $item->harga,
+            ];
+        });
+
+        // dd($penjualanWithBarang);
+
+        $barang = BarangModel::select('barang_nama', 'harga_jual', 'barang_id')
+            ->get()
+            ->map(function ($barang) {
+                return [
+                    'barang_id' => $barang->barang_id,
+                    'barang_nama' => $barang->barang_nama,
+                    'harga_jual' => $barang->harga_jual,
+                    'stock_available' => $barang->stock_available,
+                ];
+            });
+
+        return view('penjualan.edit', compact('breadcrumb', 'page', 'activeMenu'))->with([
+            'penjualan' => $penjualan,
+            'barang' => $barang,
+            'penjualan_detail' => $penjualanWithBarang,
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'penjualan_id' => 'required|exists:m_penjualan,penjualan_id',
+                'pembeli' => 'required|string|max:255',
+                'penjualan_tanggal' => 'required|date',
+                'barang' => 'required|array|min:1',
+                'barang.*.id' => 'required|exists:m_barang,barang_id',
+                'barang.*.quantity' => 'required|integer|min:1',
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Validasi gagal",
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            DB::beginTransaction();
+            try {
+                $penjualan = PenjualanModel::find($request->penjualan_id);
+
+                if (!$penjualan) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "Data tidak ditemukan"
+                    ]);
+                }
+
+                $penjualan->update([
+                    'pembeli' => $request->pembeli,
+                    'penjualan_tanggal' => $request->penjualan_tanggal,
+                ]);
+
+                // Hapus detail penjualan yang sudah ada
+                $penjualan->penjualan_detail()->delete();
+
+                foreach ($request->barang as $item) {
+                    $barang = BarangModel::find($item['id']);
+
+                    // cek stock barang
+                    if ($barang->stock_available < $item['quantity']) {
+
+                        DB::rollBack();
+                        return response()->json([
+                            'status' => false,
+                            'message' => "Stock " . $barang->barang_nama . " tidak cukup"
+                        ]);
+                    }
+
+                    $penjualan->penjualan_detail()->create([
+                        'penjualan_id' => $penjualan->penjualan_id,
+                        'barang_id' => $item['id'],
+                        'jumlah' => $item['quantity'],
+                        'harga' => $barang->harga_jual * $item['quantity'],
+                    ]);
+                }
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Penjualan berhasil diupdate'
+                ]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Terjadi kesalahan saat menyimpan data',
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+        redirect('/penjualan');
+    }
+
+
 
     public function confirm_ajax(string $id)
     {

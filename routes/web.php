@@ -478,6 +478,25 @@ Route::group(['prefix' => 'penjualan', 'middleware' => ['auth', 'authorize:ADM,M
         'show_ajax'
     ]);
 
+    Route::get('/create', [
+        PenjualanController::class,
+        'create'
+    ]);
+
+    Route::post('/store', [
+        PenjualanController::class,
+        'store'
+    ]);
+
+    Route::get('/edit/{id}', [
+        PenjualanController::class,
+        'edit'
+    ]);
+    Route::post('/edit', [
+        PenjualanController::class,
+        'update'
+    ]);
+
     Route::get('/create_ajax', [PenjualanController::class, 'create_ajax']);
     Route::post('/ajax', [PenjualanController::class, 'store_ajax']);
 

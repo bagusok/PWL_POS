@@ -4,8 +4,7 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
-                <button type="button" onclick="modalAction('{{ url('penjualan/create_ajax') }}')"
-                    class="btn btn-sm btn-success mt-1">Tambah</button>
+                <a href="{{ url('penjualan/create') }}" class="btn btn-sm btn-primary mt-1">Tambah</a>
             </div>
         </div>
         <div class="card-body">
@@ -29,6 +28,7 @@
                         <th>ID</th>
                         <th>Kode Penjualan</th>
                         <th>Pembeli</th>
+                        <th>Total Harga</th>
                         <th>Penginput</th>
                         <th>Tanggal</th>
                         <th>Aksi</th>
@@ -85,6 +85,12 @@
                     },
                     {
                         data: "pembeli",
+                        className: "text-center",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "total_harga",
                         className: "text-center",
                         orderable: true,
                         searchable: true
