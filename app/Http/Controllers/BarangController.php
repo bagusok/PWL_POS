@@ -58,8 +58,7 @@ class BarangController extends Controller
                 return $barang->stock_available;
             })
             ->addColumn('aksi', function ($barang) { // menambahkan kolom aksi
-                $btn = '<button onclick="modalAction(\'' . url('/barang/' . $barang->barang_id .
-                    '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn = '<a href="' . url('/barang/' . $barang->barang_id) . '" class="btn btn-primary btn-sm">Detail</a> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/barang/' . $barang->barang_id .
                     '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<bsutton onclick="modalAction(\'' . url('/barang/' . $barang->barang_id .

@@ -25,10 +25,10 @@ use Illuminate\Support\Facades\Route;
 Route::pattern('id', '[0-9]+'); // localization
 
 
-Route::get('/', [
+Route::get('/',  [
     WelcomeController::class,
     'index'
-]);
+])->middleware('auth');
 
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postLogin']);
