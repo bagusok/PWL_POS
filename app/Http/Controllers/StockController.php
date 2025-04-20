@@ -46,9 +46,9 @@ class StockController extends Controller
             // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
             ->addIndexColumn()
             ->addColumn('aksi', function ($stock) { // menambahkan kolom aksi
-                $btn = '<button onclick="modalAction(\'' . url('/stock/' . $stock->stock_id .
-                    '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<bsutton onclick="modalAction(\'' . url('/stock/' . $stock->stock_id .
+                // $btn = '<button onclick="modalAction(\'' . url('/stock/' . $stock->stock_id .
+                //     '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn = '<bsutton onclick="modalAction(\'' . url('/stock/' . $stock->stock_id .
                     '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
 
                 return $btn;

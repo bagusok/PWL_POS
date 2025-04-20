@@ -347,13 +347,15 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth', 'authorize:ADM'],], f
         UserController::class,
         'export_pdf'
     ]);
+});
 
-    Route::get('/settings/change-profile-picture', [
+Route::middleware(['auth'])->group(function () {
+    Route::get('/user/settings/change-profile-picture', [
         UserController::class,
         'change_profile_picture'
     ]);
 
-    Route::post('/settings/change-profile-picture/update', [
+    Route::post('/user/settings/change-profile-picture/update', [
         UserController::class,
         'update_profile_picture'
     ]);

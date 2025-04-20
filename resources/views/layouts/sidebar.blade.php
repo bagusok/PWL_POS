@@ -58,9 +58,9 @@
         ],
         [
             'title' => 'Stok Barang',
-            'url' => '/stok',
+            'url' => '/stock',
             'icon' => 'fas fa-cubes',
-            'menu' => 'stok',
+            'menu' => 'stock',
             'roles' => ['ADM', 'MNG', 'STF'],
         ],
         [

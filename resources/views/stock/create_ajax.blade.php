@@ -10,7 +10,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Barang</label>
-                    <select name="barang_id" id="barang_id" class="form-control" required>
+                    <select id="select-barang" name="barang_id" id="barang_id" class="form-control" required>
                         <option value="">- Pilih Barang -</option>
                         @foreach ($barang as $b)
                             <option value="{{ $b->barang_id }}">{{ $b->barang_nama }} ({{ $b->barang_kode }})</option>
@@ -20,7 +20,7 @@
                 </div>
                 <div class="form-group">
                     <label>Supplier</label>
-                    <select name="supplier_id" id="supplier_id" class="form-control" required>
+                    <select id="select-supplier" name="supplier_id" id="supplier_id" class="form-control" required>
                         <option value="">- Pilih Supplier -</option>
                         @foreach ($supplier as $s)
                             <option value="{{ $s->supplier_id }}">{{ $s->supplier_nama }} ({{ $s->supplier_kode }})
@@ -44,7 +44,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
+                <button type="button" data-dismiss="modal" class="btn btn-secondary">Batal</button>
                 <button type="submit" class="btn btn-primary">Tambah</button>
             </div>
         </div>
@@ -52,6 +52,21 @@
 </form>
 <script>
     $(document).ready(function() {
+
+        $('#myModal').on('shown.bs.modal', function() {
+            $('#select-barang').select2({
+                placeholder: 'Pilih Barang',
+                theme: 'bootstrap-5',
+                dropdownParent: $('#myModal')
+            });
+
+            $('#select-supplier').select2({
+                placeholder: 'Pilih Supplier',
+                theme: 'bootstrap-5',
+                dropdownParent: $('#myModal')
+            });
+        });
+
         $("#form-tambah").validate({
             rules: {
                 barang_id: {

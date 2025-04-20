@@ -5,7 +5,7 @@
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
                 <button type="button" onclick="modalAction('{{ url('stock/create_ajax') }}')"
-                    class="btn btn-sm btn-success mt-1">Tambah</button>
+                    class="btn btn-sm btn-primary mt-1">Tambah</button>
             </div>
         </div>
         <div class="card-body">
@@ -38,7 +38,7 @@
             </table>
         </div>
     </div>
-    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" databackdrop="static"
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
         data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 @push('css')

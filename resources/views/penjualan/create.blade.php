@@ -237,7 +237,7 @@
                     // check if stock is available from barangs
                     let barangId = cart[existingItemIndex].id;
                     let barangIndex = barangs.findIndex(barang => barang.barang_id == barangId);
-                    let stockAvailable = barangs[barangIndex].stock_available - cart[existingItemIndex].quantity;
+                    let stockAvailable = barangs[barangIndex].stock_available;
 
                     if (stockAvailable <= 0) {
                         Swal.fire({
