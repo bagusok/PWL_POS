@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BarangModel;
 use App\Models\PenjualanModel;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -367,5 +368,28 @@ class PenjualanController extends Controller
         }
 
         return redirect('/');
+    }
+
+    public function export_pdf(Request $request)
+    {
+        $data = PenjualanModel::with('penjualan_detail', 'user')->withSum('penjualan_detail', 'harga')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $pdf = Pdf::loadView('penjualan.export_pdf', [
+            'data' => $data
+        ]);
+
+        $pdf->setPaper('A4', 'landscape'); // Note: fixed typo from 'potrait' to 'portrait'
+        $pdf->setOptions([
+            'isRemoteEnabled' => true,
+            // 'margin_top' => 10,
+            // 'margin_right' => 10,
+            // 'margin_bottom' => 10,
+            // 'margin_left' => 10,
+            // 'dpi' => 150
+        ]);
+
+        return $pdf->stream('Data_Penjualan_' . date('Y-m-d_H-i-s') . '.pdf');
     }
 }

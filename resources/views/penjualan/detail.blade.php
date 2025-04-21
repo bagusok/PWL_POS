@@ -17,8 +17,6 @@
     </div>
 @else
     <form action="{{ url('/penjualan/' . $penjualan->penjualan_id . '/delete_ajax') }}" method="POST" id="form-delete">
-        @csrf
-        @method('DELETE')
         <div id="modal-master" class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -40,6 +38,10 @@
                         <tr>
                             <th class="text-left col-3">Pembeli</th>
                             <td class="col-9">{{ $penjualan->pembeli }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-left col-3">Penginput</th>
+                            <td class="col-9">{{ $penjualan->user->username }}</td>
                         </tr>
                         <tr>
                             <th class="text-left col-3">Tanggal</th>
@@ -81,51 +83,5 @@
                 </div>
             </div>
     </form>
-    <script>
-        $(document).ready(function() {
-            $("#form-delete").validate({
-                rules: {},
-                submitHandler: function(form) {
-                    $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: $(form).serialize(),
-                        success: function(response) {
-                            if (response.status) {
-                                $('#myModal').modal('hide');
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.message
-                                });
-                                dataPenjualan.ajax.reload();
-                            } else {
-                                $('.error-text').text('');
-                                $.each(response.msgField, function(prefix, val) {
-                                    $('#error-' + prefix).text(val[0]);
-                                });
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Terjadi Kesalahan',
-                                    text: response.message
-                                });
-                            }
-                        }
-                    });
-                    return false;
-                },
-                errorElement: 'span',
-                errorPlacement: function(error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
-                },
-                highlight: function(element, errorClass, validClass) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function(element, errorClass, validClass) {
-                    $(element).removeClass('is-invalid');
-                }
-            });
-        });
-    </script>
+
 @endempty

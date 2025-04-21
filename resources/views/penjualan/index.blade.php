@@ -4,6 +4,7 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
+                <a href="{{ url('penjualan/export_pdf') }}" class="btn btn-sm btn-danger mt-1" target="_blank">Export Pdf</a>
                 <a href="{{ url('penjualan/create') }}" class="btn btn-sm btn-primary mt-1">Tambah</a>
             </div>
         </div>

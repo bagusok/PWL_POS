@@ -511,4 +511,9 @@ Route::group(['prefix' => 'penjualan', 'middleware' => ['auth', 'authorize:ADM,M
         PenjualanController::class,
         'delete_ajax'
     ]);
+
+    Route::get('/export_pdf', [
+        PenjualanController::class,
+        'export_pdf'
+    ]);
 });
